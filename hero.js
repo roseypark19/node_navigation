@@ -11,6 +11,7 @@ class TinyHero {
         this.animations = [];
         this.scale = PARAMS.SCALE / 2;
         this.targetIndex = 0;
+        this.prevTargetIndex = 0;
         this.x = this.destinations[this.targetIndex].originX - 16 * this.scale;
         this.y = this.destinations[this.targetIndex].originY - 16 * this.scale;
         this.target = this.destinations[this.targetIndex];
@@ -42,42 +43,41 @@ class TinyHero {
             newVelY += this.velocityConstant;
         }
 
-        if (distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0 && this.target.stoppable) {
-            if (newVelX !== 0) {
-                if (Math.sign(newVelX) === Math.sign(this.target.neighbors.prev.x)) {
+        if (newVelX !== 0) {
+            if (distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0) {
+                if (Math.sign(newVelX) === Math.sign(this.target.neighbors.prev.x) && this.targetIndex > 0) {
                     this.targetIndex--;
-                } else if (Math.sign(newVelX) === Math.sign(this.target.neighbors.next.x)) {
+                } else if (Math.sign(newVelX) === Math.sign(this.target.neighbors.next.x) && this.targetIndex < this.destinations.length - 1) {
                     this.targetIndex++;
                 }
-            }
-    
-            if (newVelY !== 0) {
-                if (Math.sign(newVelY) === Math.sign(this.target.neighbors.prev.y)) {
-                    this.targetIndex--;
-                } else if (Math.sign(newVelY) === Math.sign(this.target.neighbors.next.y)) {
-                    this.targetIndex++;
+            } else {
+                let sign = this.prevTargetIndex < this.targetIndex ? Math.sign(this.target.neighbors.prev.x) : Math.sign(this.target.neighbors.next.x);
+                if (sign === Math.sign(newVelX)) {
+                    let temp = this.targetIndex;
+                    this.targetIndex = this.prevTargetIndex;
+                    this.prevTargetIndex = temp;
                 }
             }
-            // console.log("entered")
+        }
+
+        if (newVelY !== 0) {
+            if (distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0) {
+                if (Math.sign(newVelY) === Math.sign(this.target.neighbors.prev.y) && this.targetIndex > 0) {
+                    this.targetIndex--;
+                } else if (Math.sign(newVelY) === Math.sign(this.target.neighbors.next.y) && this.targetIndex < this.destinations.length - 1) {
+                    this.targetIndex++;
+                }
+            } else {
+                let sign = this.prevTargetIndex < this.targetIndex ? Math.sign(this.target.neighbors.prev.y) : Math.sign(this.target.neighbors.next.y);
+                if (sign === Math.sign(newVelY)) {
+                    let temp = this.targetIndex;
+                    this.targetIndex = this.prevTargetIndex;
+                    this.prevTargetIndex = temp;
+                }
+            }
         }
 
         this.target = this.destinations[this.targetIndex];
-
-        // if (newVelX !== 0) {
-        //     if (Math.sign(newVelX) === Math.sign(this.target.prev.x) && ) {
-        //         this.targetIndex--;
-        //     } else if (Math.sign(newVelX) === Math.sign(this.target.next.x)) {
-        //         this.targetIndex++;
-        //     }
-        // }
-
-        // if (newVelY !== 0) {
-        //     if (Math.sign(newVelY) === Math.sign(this.target.prev.y)) {
-        //         this.targetIndex--;
-        //     } else if (Math.sign(newVelY) === Math.sign(this.target.next.y)) {
-        //         this.targetIndex++;
-        //     }
-        // }
 
         let unitVect = { x: 0, y: 0 }; 
 
@@ -91,9 +91,13 @@ class TinyHero {
         this.y += this.velocity.y;
         this.updateBB();
 
-        if (!this.target.stoppable && distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0) {
+        if (distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0) {
+            this.prevTargetIndex = this.targetIndex; 
+        }
+
+        if (!this.target.stoppable && distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0 &&
+            this.targetIndex > 0 && this.targetIndex < this.destinations.length - 1) {
             if (this.velocity.x !== 0) {
-                console.log("entered")
                 this.targetIndex = Math.sign(this.target.neighbors.next.x) === -Math.sign(this.velocity.x) ? this.targetIndex - 1 : this.targetIndex + 1;
             } else if (this.velocity.y != 0) {
                 this.targetIndex = Math.sign(this.target.neighbors.next.y) === -Math.sign(this.velocity.y) ? this.targetIndex - 1 : this.targetIndex + 1;

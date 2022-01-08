@@ -10,7 +10,14 @@ class SceneManager {
                             new Destination(this.game, 100, 100, {prev: {x: 0, y: -1}, next: {x: -1, y: 0}}, false), 
                             new Destination(this.game, 0, 100, {prev: {x: 1, y: 0}, next: {x: 0, y: 1}}, true), 
                             new Destination(this.game, 0, 200, {prev: {x: 0, y: -1}, next: {x: 1, y: 0}}, false), 
-                            new Destination(this.game, 100, 200, {prev: {x: -1, y: 0}, next: {x: 0, y: 0}}, true)];
+                            new Destination(this.game, 100, 200, {prev: {x: -1, y: 0}, next: {x: 1, y: 0}}, true),
+                            new Destination(this.game, 200, 200, {prev: {x: -1, y: 0}, next: {x: 0, y: 1}}, false),
+                            new Destination(this.game, 200, 300, {prev: {x: 0, y: -1}, next: {x: -1, y: 0}}, false),
+                            new Destination(this.game, 100, 300, {prev: {x: 1, y: 0}, next: {x: 0, y: 1}}, true),
+                            new Destination(this.game, 100, 400, {prev: {x: 0, y: -1}, next: {x: 1, y: 0}}, false),
+                            new Destination(this.game, 200, 400, {prev: {x: -1, y: 0}, next: {x: 1, y: 0}}, false),
+                            new Destination(this.game, 300, 400, {prev: {x: -1, y: 0}, next: {x: 0, y: -1}}, true),
+                            new Destination(this.game, 300, 300, {prev: {x: 0, y: 1}, next: {x: 0, y: 0}}, false)];
 
         for (let i = 0; i < destinations.length; i++) {
             this.game.addEntity(destinations[i]);
