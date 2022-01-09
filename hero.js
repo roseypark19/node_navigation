@@ -9,7 +9,7 @@ class TinyHero {
         this.velocityConstant = 2;
         this.velocity = { x : 0, y : 0 };
         this.animations = [];
-        this.scale = PARAMS.SCALE / 2;
+        this.scale = PARAMS.SCALE / 1;
         this.targetIndex = 0;
         this.prevTargetIndex = 0;
         this.x = this.destinations[this.targetIndex].originX - 16 * this.scale;
