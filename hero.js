@@ -43,41 +43,48 @@ class TinyHero {
             newVelY += this.velocityConstant;
         }
 
-        if (newVelX !== 0) {
-            if (distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0) {
+        let targetReached = distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0;
+
+        if (newVelX !== 0 && (!targetReached || (targetReached && this.target.stoppable))) {
+            if (this.prevTargetIndex === this.targetIndex) {
                 if (Math.sign(newVelX) === Math.sign(this.target.neighbors.prev.x) && this.targetIndex > 0) {
+                    this.prevTargetIndex = this.targetIndex;
                     this.targetIndex--;
                 } else if (Math.sign(newVelX) === Math.sign(this.target.neighbors.next.x) && this.targetIndex < this.destinations.length - 1) {
+                    this.prevTargetIndex = this.targetIndex;
                     this.targetIndex++;
                 }
             } else {
                 let sign = this.prevTargetIndex < this.targetIndex ? Math.sign(this.target.neighbors.prev.x) : Math.sign(this.target.neighbors.next.x);
                 if (sign === Math.sign(newVelX)) {
-                    let temp = this.targetIndex;
-                    this.targetIndex = this.prevTargetIndex;
-                    this.prevTargetIndex = temp;
+                    this.prevTargetIndex = this.targetIndex;
+                    this.targetIndex = sign === Math.sign(this.target.neighbors.prev.x) ? this.targetIndex - 1 : this.targetIndex + 1;
                 }
             }
+            this.target = this.destinations[this.targetIndex]; 
         }
 
-        if (newVelY !== 0) {
-            if (distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0) {
+        targetReached = distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0;
+
+        if (newVelY !== 0 && (!targetReached || (targetReached && this.target.stoppable))) {
+            if (this.prevTargetIndex === this.targetIndex) {
                 if (Math.sign(newVelY) === Math.sign(this.target.neighbors.prev.y) && this.targetIndex > 0) {
+                    this.prevTargetIndex = this.targetIndex;
                     this.targetIndex--;
                 } else if (Math.sign(newVelY) === Math.sign(this.target.neighbors.next.y) && this.targetIndex < this.destinations.length - 1) {
+                    this.prevTargetIndex = this.targetIndex;
                     this.targetIndex++;
                 }
             } else {
                 let sign = this.prevTargetIndex < this.targetIndex ? Math.sign(this.target.neighbors.prev.y) : Math.sign(this.target.neighbors.next.y);
                 if (sign === Math.sign(newVelY)) {
-                    let temp = this.targetIndex;
-                    this.targetIndex = this.prevTargetIndex;
-                    this.prevTargetIndex = temp;
+                    this.prevTargetIndex = this.targetIndex;
+                    this.targetIndex = sign === Math.sign(this.target.neighbors.prev.y) ? this.targetIndex - 1 : this.targetIndex + 1;
                 }
             }
-        }
 
-        this.target = this.destinations[this.targetIndex];
+            this.target = this.destinations[this.targetIndex];
+        }
 
         let unitVect = { x: 0, y: 0 }; 
 
@@ -91,18 +98,15 @@ class TinyHero {
         this.y += this.velocity.y;
         this.updateBB();
 
-        if (distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0) {
-            this.prevTargetIndex = this.targetIndex; 
-        }
+        targetReached = distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0;
 
-        if (!this.target.stoppable && distance(this.BB.center, {x: this.target.originX, y: this.target.originY}) === 0 &&
-            this.targetIndex > 0 && this.targetIndex < this.destinations.length - 1) {
-            if (this.velocity.x !== 0) {
-                this.targetIndex = Math.sign(this.target.neighbors.next.x) === -Math.sign(this.velocity.x) ? this.targetIndex - 1 : this.targetIndex + 1;
-            } else if (this.velocity.y != 0) {
-                this.targetIndex = Math.sign(this.target.neighbors.next.y) === -Math.sign(this.velocity.y) ? this.targetIndex - 1 : this.targetIndex + 1;
-            }
+        if (!this.target.stoppable && targetReached && this.targetIndex > 0 && this.targetIndex < this.destinations.length - 1) {
+            let temp = this.prevTargetIndex;
+            this.prevTargetIndex = this.targetIndex;
+            this.targetIndex = temp < this.targetIndex ? this.targetIndex + 1 : this.targetIndex - 1;
             this.target = this.destinations[this.targetIndex];
+        } else if (this.target.stoppable && targetReached) {
+            this.prevTargetIndex = this.targetIndex;
         }
 
         this.state = magnitude(this.velocity) > 0 ? 1 : 0;
