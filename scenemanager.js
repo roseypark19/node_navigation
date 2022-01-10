@@ -19,11 +19,30 @@ class SceneManager {
                             new Destination(this.game, 300, 400, {prev: {x: -1, y: 0}, next: {x: 0, y: -1}}, true),
                             new Destination(this.game, 300, 300, {prev: {x: 0, y: 1}, next: {x: 0, y: 0}}, false)];
 
+        let propsList = [props[10]];
+
         for (let i = 0; i < destinations.length; i++) {
             this.game.addEntity(destinations[i]);
         }
+        let pos = randomInt(200);
+        for (let i = 0; i < propsList.length; i++) {
+            let prop = propsList[i];
+            
+            if (prop.shadow) {
+                this.game.addEntity(prop.shadow(this.game, pos, pos, true));
+            }
+            if (prop.base) {
+                this.game.addEntity(prop.base(this.game, pos, pos, true));
+            }
+        }
         this.hero = new TinyHero(this.game, 0, 0, destinations);
         this.game.addEntity(this.hero);
+        for (let i = 0; i < propsList.length; i++) {
+            let prop = propsList[i];
+            if (prop.topper) {
+                this.game.addEntity(prop.topper(this.game, pos, pos, true));
+            }
+        }
     };
 
 

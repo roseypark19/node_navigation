@@ -4,7 +4,8 @@ let ASSET_MANAGER = new AssetManager();
 
 // sprites
 ASSET_MANAGER.queueDownload("./sprites/hero.png");
-
+ASSET_MANAGER.queueDownload("./sprites/props.png");
+ASSET_MANAGER.queueDownload("./sprites/props_shadows.png");
 
 ASSET_MANAGER.downloadAll(function () {
 	let canvas = document.getElementById('gameWorld');
